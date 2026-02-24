@@ -127,12 +127,11 @@ export default function PaymentPage() {
     remarks: "",
   });
 
-  // Calculate Total Amount: perInstallation + (perInstallation * gst% / 100)
+  // Calculate Total Amount: perInstallation + gst (simple addition)
   useEffect(() => {
     const install = parseFloat(formData.ipPaymentPerInstallation) || 0;
-    const gstPercent = parseFloat(formData.gst18Percent) || 0;
-    const gstAmount = (install * gstPercent) / 100;
-    const total = (install + gstAmount).toFixed(2);
+    const gst = parseFloat(formData.gst18Percent) || 0;
+    const total = (install + gst).toFixed(2);
 
     if (formData.totalAmount !== total) {
       setFormData((prev) => ({ ...prev, totalAmount: total }));
@@ -1244,14 +1243,14 @@ export default function PaymentPage() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-slate-700 font-medium">GST %</Label>
+                      <Label className="text-slate-700 font-medium">GST</Label>
                       <Input
                         type="number"
                         value={formData.gst18Percent}
                         onChange={(e) =>
                           setFormData({ ...formData, gst18Percent: e.target.value })
                         }
-                        placeholder="Enter GST %"
+                        placeholder="Enter GST Amount"
                         className="border-slate-200 focus:border-cyan-400 focus-visible:ring-cyan-100 bg-white"
                       />
                     </div>
@@ -1323,20 +1322,22 @@ export default function PaymentPage() {
                         className="border-slate-200 focus:border-cyan-400 focus-visible:ring-cyan-100"
                       />
                     </div>
-                    <div className="space-y-2">
-                      <Label className="text-slate-700 font-medium">
-                        REMARKS
-                      </Label>
-                      <Input
-                        type="text"
-                        value={formData.remarks}
-                        onChange={(e) =>
-                          setFormData({ ...formData, remarks: e.target.value })
-                        }
-                        placeholder="Enter Remarks"
-                        className="border-slate-200 focus:border-cyan-400 focus-visible:ring-cyan-100"
-                      />
-                    </div>
+                  </div>
+
+                  {/* REMARKS - Full Width */}
+                  <div className="space-y-2">
+                    <Label className="text-slate-700 font-medium">
+                      REMARKS
+                    </Label>
+                    <textarea
+                      value={formData.remarks}
+                      onChange={(e) =>
+                        setFormData({ ...formData, remarks: e.target.value })
+                      }
+                      placeholder="Enter Remarks"
+                      rows={3}
+                      className="w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:border-cyan-400 focus:ring-cyan-100 bg-white resize-vertical"
+                    />
                   </div>
 
                   <div className="flex justify-end gap-4 mt-4 pt-4 border-t border-slate-100 pb-6 pr-6">
