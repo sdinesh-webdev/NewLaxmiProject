@@ -50,11 +50,52 @@ export default function LoginPage() {
           return;
         }
 
+        // Store standard flags
         localStorage.setItem("isAuthenticated", "true");
         localStorage.setItem("username", userData.user_name || username);
         localStorage.setItem("userRole", userData.role || "User");
         localStorage.setItem("pageAccess", userData.page_access || "");
-        navigate("/dashboard");
+
+        // Store the full constructed user object for role filtering (like IP name)
+        localStorage.setItem("loggedInUser", JSON.stringify({
+          ...userData,
+          ipName: userData.ip_name || ""
+        }));
+
+        // Determine redirection based on page_access
+        let targetRoute = "/dashboard"; // default fallback
+
+        if (userData.page_access && userData.page_access.trim() !== "") {
+          const accessList = userData.page_access.split(",").map(s => s.trim());
+
+          // Map of readable names to their route paths
+          const routeMap = {
+            "Dashboard": "/dashboard",
+            "Portal": "/portal",
+            "Work order": "/work-order",
+            "Survey": "/survey",
+            "Dispatch & Receiving": "/dispatch-receiving", // Assuming this exists based on options
+            "Installation": "/installation",
+            "Portal Update": "/portal-update",
+            "Invoicing": "/invoicing", // Assuming this exists based on options
+            "System Info": "/system-info",
+            "JCR Status": "/jcc-status",
+            "Beneficiary Share": "/beneficiary-share",
+            "Insurance": "/insurance",
+            "IP payment": "/payment",
+            "Settings": "/setting"
+          };
+
+          // Find the first assigned page that has a known route
+          for (const pageName of accessList) {
+            if (routeMap[pageName]) {
+              targetRoute = routeMap[pageName];
+              break;
+            }
+          }
+        }
+
+        navigate(targetRoute);
       }
     } catch (err) {
       console.error("Login Error:", err);
@@ -112,7 +153,7 @@ export default function LoginPage() {
           </div>
           <div className="space-y-2">
             <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-800">
-              Laxmi
+              Laxmi Project
             </h1>
             <p className="text-slate-500 text-sm font-medium">
               Enter your credentials to access the admin portal
